@@ -53,6 +53,15 @@ document.addEventListener('DOMContentLoaded', async () => {
     boutons.forEach(bouton => {
         bouton.addEventListener("click", async function(event) {
 
+            //On réinitialise la couleur des boutons
+            boutons.forEach(btn => {
+                btn.style.backgroundColor = '';
+                btn.style.color = '';
+            });
+            // On change la couleur de fond du bouton et la couleur du texte
+            bouton.style.backgroundColor = '#1D6154';
+            bouton.style.color = 'white';
+
             //On recupère l'ID du bouton cliqué
             const idCategorie = event.target.getAttribute('data-id');
             
@@ -65,5 +74,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             console.log(`bouton ${event.target.innerText} cliqué`);
         });
     });
+
+
 });
 
