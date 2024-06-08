@@ -10,7 +10,7 @@ del, dfn, em, img, ins, kbd, q, s, samp,
 small, strike, strong, sub, sup, tt, var,
 b, u, i, center,
 dl, dt, dd, ol, ul, li,
-fieldset, form, label, legend,
+fieldset, form, legend,
 table, caption, tbody, tfoot, thead, tr, th, td,
 article, aside, canvas, details, embed,
 figure, figcaption, footer, header, hgroup,
@@ -23,6 +23,12 @@ time, mark, audio, video {
 	font: inherit;
 	vertical-align: baseline;
 }
+a{
+	text-decoration: none;
+}
+a:hover{
+	font-weight: bold;
+}
 /* HTML5 display-role reset for older browsers */
 article, aside, details, figcaption, figure,
 footer, header, hgroup, menu, nav, section {
@@ -30,6 +36,8 @@ footer, header, hgroup, menu, nav, section {
 }
 body {
 	line-height: 1;
+	background: #FFFEF8;
+
 }
 ol, ul {
 	list-style: none;
@@ -93,6 +101,8 @@ nav ul {
 nav li {
 	padding: 0 10px;
 	font-size: 1.2em;
+	cursor: pointer;
+
 }
 
 li:hover {
@@ -150,7 +160,7 @@ li:hover {
 	padding: 10px 25px;
 	cursor: pointer;
 	font-size: 18px;
-	background-color: white;
+	background: #FFFEF8;
 	color: #1D6154;
 }
 
@@ -200,6 +210,8 @@ input[type="submit"]{
 footer nav ul {
 	display: flex;
 	justify-content: flex-end;
-	margin: 2em
+	padding: 2em;
+	background-color: white;
 }
+
 

@@ -74,7 +74,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             console.log(`bouton ${event.target.innerText} cliqué`);
         });
     });
-
-
 });
+
+
 
