@@ -1,4 +1,3 @@
-
 document.addEventListener('DOMContentLoaded', () => {
     const loginForm = document.getElementById('login-form');
 
@@ -25,7 +24,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 //On converti l'objet loginData en JSON
                 body: JSON.stringify(loginData)
             });
-            console.log('Reponse status:', reponse.status); // Log the status
         
             if(reponse.ok){//Verifie si la réponse est réussie
                 const data = await reponse.json();//On extrait les données JSON de la réponse
@@ -34,19 +32,19 @@ document.addEventListener('DOMContentLoaded', () => {
             }else{
                 const error = await reponse.json;//On extrait les données de l'erreur 
                 if(reponse.status === 404){
-                    displayErrorMessage('Utilisateur non trouvé.'); // Message spécifique pour l'erreur 404
+                    afficherMessageErreur('Utilisateur non trouvé.'); // Message spécifique pour l'erreur 404
                 }else if(reponse.status === 401){
-                    displayErrorMessage('Email ou mot de passe incorrect.'); // Message spécifique pour l'erreur 401
+                    afficherMessageErreur('Email ou mot de passe incorrect.'); // Message spécifique pour l'erreur 401
                 }else{
-                    displayErrorMessage(error.message); //Message d'erreur de base 
+                    afficherMessageErreur(error.message); //Message d'erreur de base 
                 }
             }
         }catch(error){
-            displayErrorMessage('Une erreur est survenue. Veuillez réessayer plus tard.'); // on affiche un message d'erreur générique si la requête à l'API échoue
+            afficherMessageErreur('Une erreur est survenue. Veuillez réessayer plus tard.'); // on affiche un message d'erreur générique si la requête à l'API échoue
         }
     });
      // Fonction pour afficher un message d'erreur
-     function displayErrorMessage(message) {
+     function afficherMessageErreur(message) {
         const errorMessageElement = document.getElementById('error-message');
         errorMessageElement.innerText = message; // On met à jour le texte de l'élément de message d'erreur
      }
