@@ -78,3 +78,105 @@ document.addEventListener('DOMContentLoaded', async () => {
 
 
 
+
+// Boîte modale :
+
+const openModalBtn = document.querySelector('a[href="#modal1"]');
+const modal = document.getElementById('modal1');
+const modalWrapper = modal.querySelector('.modal-wrapper');
+const modalContent = modal.querySelector('.modal-content');
+const closeModalBtn = modalWrapper.querySelector('.js-modal-close');
+const addPictureBtn = modalWrapper.querySelector('.js-add-picture');
+const backModalBtn = modalWrapper.querySelector('.js-modal-back');
+    
+//On affiche la modal
+openModalBtn.addEventListener('click', (event) => {
+    event.preventDefault();
+    modal.style.display = 'flex';
+    afficherEtat1()
+});
+
+//On ferme la modale au clique sur la croix
+closeModalBtn.addEventListener('click', () => {
+    modal.style.display = 'none'; // Cache la modale
+});
+
+// Retour à l'état 1 de la modale
+backModalBtn.addEventListener('click', () => {
+    afficherEtat1()
+});
+
+ //on ferme la modale en cliquant en dehors de la modale et on change le display
+ window.addEventListener('click', (event) => {
+    if (event.target === modal) {
+        modal.style.display = 'none';
+    }
+});
+
+// Fonction pour afficher l'état 1 de la modale
+function afficherEtat1() {
+    // On nettoie le contenue
+    modalContent.innerHTML = '';
+
+    // On ajoute le titre
+    const titre = document.createElement('h2');
+    titre.textContent = 'Galerie photo';
+    modalContent.appendChild(titre);
+
+    // On ajoute les images des projets
+    fetchProjets().then(projets => { // <- .then(projets =>{) Permet de parcourir les projets une fois qu'ils ont été récupéré  
+        projets.forEach(projet => {
+            const img = document.createElement('img');
+            img.src = projet.imageUrl;
+            img.alt = projet.title;
+            modalContent.appendChild(img);
+        });
+    });
+
+    // Mettre à jour le texte du bouton
+    addPictureBtn.textContent = 'Ajouter une photo';
+    // Cacher le bouton de retour
+    backModalBtn.style.display = 'none';
+
+    // On s'assure de ne pas avoir plusieurs écouteurs
+    addPictureBtn.removeEventListener('click', afficherEtat2); 
+    addPictureBtn.addEventListener('click', afficherEtat2);
+}
+
+// Fonction pour afficher l'état 2 de la modale
+function afficherEtat2() {
+    // On nettoie le contenue
+    modalContent.innerHTML = '';
+
+    // On ajoute le titre
+    const titre = document.createElement('h2');
+    titre.textContent = 'Ajout photo';
+    modalContent.appendChild(titre);
+
+    //On affiche le bouton de retour
+    backModalBtn.style.display = 'block';
+   
+    // On ajoute le formulaire d'ajout de photo
+    const form = document.createElement('form');
+    form.innerHTML = `
+        <label for="photo">Photo:</label>
+        <input type="file" id="photo" name="photo" accept="image/*">
+        <label for="title">Titre:</label>
+        <input type="text" id="title" name="title">
+        <button type="submit">Valider</button>
+    `;
+    form.classList.add('modal-form');
+    modalContent.appendChild(form);
+
+    // Mettre à jour le texte du bouton
+    addPictureBtn.textContent = 'Valider';
+
+    addPictureBtn.removeEventListener('click', afficherEtat1); // S'assurer de ne pas avoir plusieurs écouteurs
+    addPictureBtn.addEventListener('click', (event) => {
+        if (addPictureBtn.textContent === 'Ajouter une photo') {
+            afficherEtat2();
+        } else if (addPictureBtn.textContent === 'Valider') {
+            document.querySelector('.modal-form').submit();
+        }
+    });
+}

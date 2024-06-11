@@ -83,7 +83,6 @@ h1 > span {
 	font-family: 'Work Sans';
 	font-size:10px;
 	letter-spacing: 0.1em;
-;
 }
 
 h2{
@@ -102,7 +101,6 @@ nav li {
 	padding: 0 10px;
 	font-size: 1.2em;
 	cursor: pointer;
-
 }
 
 li:hover {
@@ -131,10 +129,7 @@ li:hover {
 #introduction p {
 	margin-bottom: 0.5em;
 }
-#portfolio h2 {
-	text-align: center;
-	margin-bottom: 1em;
-}
+
 .gallery {
 	width: 100%;
 	display: grid;
@@ -143,9 +138,36 @@ li:hover {
 	grid-row-gap: 20px;
 }
 
+.container{
+    display: flex;
+    justify-content: center;
+	align-items: center;
+}
+.inner-container{
+	position: relative;
+	margin-bottom: 20px;
+}
+.mes-projets {
+	position: relative;
+    margin: 0; 
+    display: inline-block;
+}
+
+.js-modal-open{
+	position: absolute;
+    right: -130px;
+	top: 30%;
+	font-size: 16px;
+	cursor: pointer;
+}
+
+.js-modal-open::before {
+	content: "\f044"; 
+	font-family: "Font Awesome 6 Free"; 
+}
+
 .gallery img {
 	width: 100%;
-
 }
 
 .categorie {
@@ -214,4 +236,86 @@ footer nav ul {
 	background-color: white;
 }
 
+.modal {
+	display: none;
+	justify-content: center; 
+	align-items: center; 
+	position: fixed;
+	top: 0;
+	left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.6);
+    z-index: 1000;
+}
 
+.modal-wrapper {
+	width: 690px; 
+    height: 750px;
+	background: white;
+	
+	border-radius: 5px;
+	box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3); 
+	position: relative; 
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+}
+
+.modal-content {
+	width: 80%; 
+    height: 70%;
+	padding-top: 50px;
+	border-bottom: 2px solid #B3B3B3;
+}
+.modal-content img {
+	width: 90px;
+    height: auto;
+    margin: 10px;
+    object-fit: cover; 
+
+}
+.modal-content h2 {
+	text-align: center;
+	color: black;
+	font-family: 'Work Sans', sans-serif;
+	font-size: 26px;
+	font-weight: 300;
+	margin: 15px;
+	margin-bottom: 40px;
+}
+
+.modal .js-add-picture {
+	margin-top: 50px;
+	font-size: 14px;
+	border-radius: 15px;
+	padding: 8px 45px 8px 45px;
+	background-color: #1D6154;
+	color: white;
+	border: none;
+	font-family: 'Syne', sans-serif;
+	
+}
+
+.js-modal-close {	
+	position: absolute;
+	top: 20px;
+	right: 20px;
+	background: none;
+	border: none;
+	font-size: 24px;
+	cursor: pointer;
+  }
+  .js-modal-back {
+    position: absolute;
+    top: 20px;
+    left: 20px; 
+    background: none;
+    border: none;
+    font-size: 25px;
+    cursor: pointer;  
+}
+
+  .modal-form{
+
+  }
