@@ -1,31 +1,6 @@
 //On importe les fonctions depuis utils.js
-import { fetchProjets, fetchCategories, ajouterCategories, ajouterProjets, afficherEtat1} from './utils.js'
+import { fetchProjets, fetchCategories, ajouterCategories, deconnecter, afficherLienModal, ajouterProjets, afficherEtat1} from './utils.js'
 
-
-// Vérifie si l'utilisateur est connecté en vérifiant la présence du token dans le localStorage
-function estConnecte() {
-    return localStorage.getItem('authToken') !== null;
-}
-
-// Affiche ou masque les éléments de modification en fonction de l'état de connexion
-function afficherModal() {
-    const boutonModifier = document.querySelector('.js-modal-open');
-    const boutonLogout = document.getElementById('logout');
-
-    if (estConnecte()) {
-        boutonModifier.style.display = 'block';
-        boutonLogout.style.display = 'block';
-    } else {
-        boutonModifier.style.display = 'none';
-        boutonLogout.style.display = 'none';
-    }
-}
-
-// Gestion de la déconnexion
-function deconnecter() {
-    localStorage.removeItem('authToken');
-    window.location.href = "index.html"; // Recharge la page après déconnexion
-}
 
 // Ajout de l'écouteur d'événement pour le bouton de déconnexion
 document.getElementById('logout').addEventListener('click', (event) => {
@@ -33,10 +8,9 @@ document.getElementById('logout').addEventListener('click', (event) => {
     deconnecter();
 });
 
-
 //On s'assure que le DOM soit chargé et analysé.
 document.addEventListener('DOMContentLoaded', async () => {
-    afficherModal()
+    afficherLienModal()
     
     const portFolio = document.getElementById("portfolio");
     const gallery = document.querySelector("#portfolio .gallery");
@@ -109,9 +83,6 @@ document.addEventListener('DOMContentLoaded', async () => {
     });
 });
 
-
-
-
 // Boîte modale
 document.addEventListener('DOMContentLoaded', async () => {
     const openModalBtn = document.querySelector('a[href="#modal1"]');
@@ -142,3 +113,5 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
     });
 });
+
+

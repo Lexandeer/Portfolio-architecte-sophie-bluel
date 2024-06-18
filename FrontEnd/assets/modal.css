@@ -121,14 +121,18 @@
 	margin: 30px 0 10px 0;
 	font-weight: 700;
 }
-.modal-form #title, #categorie {
+.modal-form #title, #category {
 	height: 50px;
 	font-size: 1.2em;
 	border: none;
 	box-shadow:0px 4px 14px 0px #00000017;
 }
-#categorie {
+#category {
 	margin-bottom: 15px;
+
+}
+#image {
+	display: none;
 }
 .modal-form #photo {
 	display: none;
@@ -160,3 +164,9 @@
 .photo p {
 	font-size: 12px;
 }
+#preview {
+	width: 30%;
+    height: 200px;
+	object-fit: cover; 
+}
+

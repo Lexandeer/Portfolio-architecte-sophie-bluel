@@ -46,6 +46,34 @@ export function ajouterProjets(projets) {
     });
 }
 
+// Vérifie si l'utilisateur est connecté en vérifiant la présence du token dans le localStorage
+export function estConnecte() {
+    return localStorage.getItem('authToken') !== null;
+}
+
+// Affiche ou masque les éléments de modification en fonction de l'état de connexion
+export function afficherLienModal() {
+    const boutonModifier = document.querySelector('.js-modal-open');
+    const boutonLogin = document.getElementById('login');
+    const boutonLogout = document.getElementById('logout');
+
+    if (estConnecte()) {
+        boutonModifier.style.display = 'block';
+        boutonLogin.style.display = 'none';
+        boutonLogout.style.display = 'block';
+    } else {
+        boutonModifier.style.display = 'none';
+        boutonLogin.style.display = 'block';
+        boutonLogout.style.display = 'none';
+    }
+}
+
+// Gestion de la déconnexion
+export function deconnecter() {
+    localStorage.removeItem('authToken');
+    window.location.href = "index.html"; // Recharge la page après déconnexion
+}
+
 // Fonction pour afficher l'état 1 de la modale
 export function afficherEtat1(modalContent, addPictureBtn, backModalBtn) {
     // On nettoie le contenu
@@ -98,7 +126,6 @@ export function afficherEtat1(modalContent, addPictureBtn, backModalBtn) {
     });
 }
 
-// Fonction pour afficher l'état 2 de la modale
 export function afficherEtat2(modalContent, backModalBtn, addPictureBtn, modal) {
     // On nettoie le contenu
     modalContent.innerHTML = '';
@@ -116,6 +143,7 @@ export function afficherEtat2(modalContent, backModalBtn, addPictureBtn, modal) 
     form.classList.add('modal-form');
     form.innerHTML = `
         <div class="photo">
+            <img id="preview" style="display:none;"/>
             <i class="fa-regular fa-image"></i>
             <label for="image"><button>+ Ajouter photo</button></label>
             <p>jpg, png : 4mo max</p>
@@ -127,9 +155,15 @@ export function afficherEtat2(modalContent, backModalBtn, addPictureBtn, modal) 
         <select id="category" name="category">
             <option value="">Sélectionnez une catégorie</option>
         </select>
-        <p class="error-message" style="color:red;"></p>
     `;
     modalContent.appendChild(form);
+
+    // Ajouter dynamiquement le paragraphe d'erreur
+    const errorMessage = document.createElement('p');
+    errorMessage.classList.add('error-message');
+    errorMessage.style.color = 'red';
+    errorMessage.style.display = 'none';
+    form.appendChild(errorMessage);
 
     // Récupérer les catégories et les ajouter au dropdown
     fetchCategories().then(categories => {
@@ -149,6 +183,29 @@ export function afficherEtat2(modalContent, backModalBtn, addPictureBtn, modal) 
         form.querySelector('#image').click();
     });
 
+    // Ajoutez un écouteur d'événement pour l'input file pour afficher l'aperçu de l'image
+    const imageInput = form.querySelector('#image');
+    const previewImage = form.querySelector('#preview');
+    const photoDiv = form.querySelector('.photo');
+
+    imageInput.addEventListener('change', (event) => {
+        const file = event.target.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                previewImage.src = e.target.result;
+                previewImage.style.display = 'block'; // Affiche l'image de prévisualisation
+                photoDiv.style.padding = '0'; // Enlève le padding de la div.photo
+
+                // Cache les autres éléments
+                form.querySelector('.photo i').style.display = 'none';
+                form.querySelector('.photo label').style.display = 'none';
+                form.querySelector('.photo p').style.display = 'none';
+            };
+            reader.readAsDataURL(file);
+        }
+    });
+
     // Mettre à jour le texte du bouton
     addPictureBtn.textContent = 'Valider';
 
@@ -157,6 +214,13 @@ export function afficherEtat2(modalContent, backModalBtn, addPictureBtn, modal) 
         event.preventDefault();
         formSubmit(form, modal);
     });
+
+    // Log pour vérifier l'élément .error-message
+    if (errorMessage) {
+        console.log('Élément .error-message ajouté dynamiquement.');
+    } else {
+        console.log('Erreur : Élément .error-message non ajouté.');
+    }
 }
 
 // Gestion de la suppression des projets dans la modale(Etat1)
@@ -187,22 +251,26 @@ export async function supprimerProjet(projetId, projetWrapper) {
 export async function formSubmit(form, modal) {
     const formData = new FormData(form);
     const errorMessage = form.querySelector('.error-message');
-    errorMessage.textContent = ''; // Réinitialise le message d'erreur
+    errorMessage.style.display = 'none'; // Réinitialise l'affichage
 
     // On vérifie que tous les champs soient bien remplis
     if (!formData.get('image') || !formData.get('title') || !formData.get('category')) {
-        errorMessage.textContent = 'Veuillez remplir tous les champs.';
-        return;
-    }
+        console.log('Erreur : Champs manquants.');
+        console.log('Avant modification:', errorMessage);
 
-    // Vérifiez si le token est présent dans localStorage
-    const authToken = localStorage.getItem('authToken');
-    if (!authToken) {
-        errorMessage.textContent = 'Vous devez être connecté pour ajouter un projet.';
+        // Assurez-vous que le message d'erreur est visible
+        errorMessage.style.display = 'block';
+        errorMessage.style.visibility = 'visible';
+        errorMessage.style.position = 'relative';
+        errorMessage.style.zIndex = '1000';
+        errorMessage.style.color = 'red';
+
+        console.log('Après modification:', errorMessage);
         return;
     }
 
     try {
+        const authToken = localStorage.getItem('authToken');
         // Vérifiez que le token est bien passé dans l'en-tête Authorization
         console.log('Authorization:', `Bearer ${authToken}`);
 
@@ -225,18 +293,16 @@ export async function formSubmit(form, modal) {
             // On recharge la page pour afficher le nouveau projet
             window.location.reload();
         } else {
-            if (response.status === 400) {
-                errorMessage.textContent = 'Requête incorrecte. Veuillez vérifier les données envoyées.';
-            } else if (response.status === 401) {
-                errorMessage.textContent = 'Vous n\'êtes pas autorisé à effectuer cette action.';
-            } else if (response.status === 500) {
-                errorMessage.textContent = 'Erreur du serveur. Veuillez réessayer plus tard.';
-            } else {
-                const error = await response.json();
-                errorMessage.textContent = error.message;
-            }
+            const error = await response.json();
+            errorMessage.textContent = error.message;
+            errorMessage.style.display = 'block'; // Affiche le message d'erreur de l'API
+            errorMessage.style.color = 'red';
+            console.log('Erreur API:', error.message);
         }
     } catch (error) {
         errorMessage.textContent = 'Une erreur est survenue. Veuillez réessayer plus tard.';
+        errorMessage.style.display = 'block'; // Affiche le message d'erreur générique
+        errorMessage.style.color = 'red';
+        console.log('Erreur de catch:', error);
     }
 }
