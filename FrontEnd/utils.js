@@ -1,15 +1,18 @@
+// Récupère les projets depuis l'API
 export async function fetchProjets() {
     const reponse = await fetch("http://localhost:5678/api/works");
-    const projets = await reponse.json();
+    const projets = await reponse.json();// .json() converti le texte(la réponse) en objet JS utilisable 
     return projets;
 }
 
+// Récupère les catégories depuis l'API
 export async function fetchCategories() {
     const reponse = await fetch("http://localhost:5678/api/categories");
-    const categories = await reponse.json();
+    const categories = await reponse.json(); 
     return categories;
 }
 
+// Ajoute dynamiquement les catégories pour trier les projets 
 export function ajouterCategories(categories) {
 
     const divCategorie = document.querySelector('.categorie');
@@ -20,11 +23,12 @@ export function ajouterCategories(categories) {
         bouton.innerText = categorie.name;
         bouton.classList.add(`btn-${categorie.id}`);
         // Ajout de l'ID de la catégorie comme attribut de données
-        bouton.setAttribute('data-id', categorie.id); 
+        bouton.setAttribute('data-id', categorie.id); //<- permet de savoir sur quel bouton on clique
         divCategorie.appendChild(bouton);
     });
 }
 
+// Ajoute dynamiquement les projets sur la page index 
 export function ajouterProjets(projets) {
     const gallery = document.querySelector("#portfolio .gallery");
     gallery.innerHTML = ''; // Effacer le contenu existant avant d'ajouter les nouveaux projets
@@ -51,6 +55,12 @@ export function estConnecte() {
     return localStorage.getItem('authToken') !== null;
 }
 
+// Gestion de la déconnexion
+export function deconnecter() {
+    localStorage.removeItem('authToken');
+    window.location.href = "index.html"; // Recharge la page après déconnexion
+}
+
 // Affiche ou masque les éléments de modification en fonction de l'état de connexion
 export function afficherLienModal() {
     const boutonModifier = document.querySelector('.js-modal-open');
@@ -66,12 +76,6 @@ export function afficherLienModal() {
         boutonLogin.style.display = 'block';
         boutonLogout.style.display = 'none';
     }
-}
-
-// Gestion de la déconnexion
-export function deconnecter() {
-    localStorage.removeItem('authToken');
-    window.location.href = "index.html"; // Recharge la page après déconnexion
 }
 
 // Fonction pour afficher l'état 1 de la modale
@@ -126,6 +130,7 @@ export function afficherEtat1(modalContent, addPictureBtn, backModalBtn) {
     });
 }
 
+// Fonction pour afficher l'état 1 de la modale
 export function afficherEtat2(modalContent, backModalBtn, addPictureBtn, modal) {
     // On nettoie le contenu
     modalContent.innerHTML = '';
@@ -155,18 +160,12 @@ export function afficherEtat2(modalContent, backModalBtn, addPictureBtn, modal) 
         <select id="category" name="category">
             <option value="">Sélectionnez une catégorie</option>
         </select>
+        <p class="error-message" style="color:red; display:none;"></p>
     `;
     modalContent.appendChild(form);
 
-    // Ajouter dynamiquement le paragraphe d'erreur
-    const errorMessage = document.createElement('p');
-    errorMessage.classList.add('error-message');
-    errorMessage.style.color = 'red';
-    errorMessage.style.display = 'none';
-    form.appendChild(errorMessage);
-
-    // Récupérer les catégories et les ajouter au dropdown
-    fetchCategories().then(categories => {
+    // Récupérer les catégories et les ajouter au selecteur
+    fetchCategories().then(categories => {      //Pour chaque catégories on ajoute une option au selecteur
         const selectCategorie = form.querySelector('#category');
         categories.forEach(categorie => {
             const option = document.createElement('option');
@@ -176,7 +175,7 @@ export function afficherEtat2(modalContent, backModalBtn, addPictureBtn, modal) 
         });
     });
 
-    // Ajoutez un gestionnaire d'événement pour le bouton "Ajouter photo"
+    // Permet de déclancher la fenêtre de selection de fichier lorsque l'on clique sur le bouton
     const addPhotoBtn = form.querySelector('.photo button');
     addPhotoBtn.addEventListener('click', (event) => {
         event.preventDefault();
@@ -188,14 +187,14 @@ export function afficherEtat2(modalContent, backModalBtn, addPictureBtn, modal) 
     const previewImage = form.querySelector('#preview');
     const photoDiv = form.querySelector('.photo');
 
-    imageInput.addEventListener('change', (event) => {
-        const file = event.target.files[0];
-        if (file) {
+    imageInput.addEventListener('change', (event) => { // Ajoute un écouteur sur le champ de fichier qui se déclenche lorsque la sélection de fichier change.
+        const file = event.target.files[0]; // On selectionne le fichier en question
+        if (file) {                         // Verifie si un fichier est selectionné
             const reader = new FileReader();
-            reader.onload = (e) => {
-                previewImage.src = e.target.result;
+            reader.onload = (e) => {  //définit ce qui se passe une fois le fichier lu
+                previewImage.src = e.target.result; //Affiche l'image une fois le fichier lu
                 previewImage.style.display = 'block'; // Affiche l'image de prévisualisation
-                photoDiv.style.padding = '0'; // Enlève le padding de la div.photo
+                photoDiv.style.padding = '0';
 
                 // Cache les autres éléments
                 form.querySelector('.photo i').style.display = 'none';
@@ -209,18 +208,12 @@ export function afficherEtat2(modalContent, backModalBtn, addPictureBtn, modal) 
     // Mettre à jour le texte du bouton
     addPictureBtn.textContent = 'Valider';
 
-    addPictureBtn.removeEventListener('click', formSubmit);
+    // On s'assure de ne pas avoir plusieurs écouteurs
+    addPictureBtn.removeEventListener('click', afficherEtat2);
     addPictureBtn.addEventListener('click', (event) => {
         event.preventDefault();
         formSubmit(form, modal);
     });
-
-    // Log pour vérifier l'élément .error-message
-    if (errorMessage) {
-        console.log('Élément .error-message ajouté dynamiquement.');
-    } else {
-        console.log('Erreur : Élément .error-message non ajouté.');
-    }
 }
 
 // Gestion de la suppression des projets dans la modale(Etat1)
@@ -251,29 +244,17 @@ export async function supprimerProjet(projetId, projetWrapper) {
 export async function formSubmit(form, modal) {
     const formData = new FormData(form);
     const errorMessage = form.querySelector('.error-message');
-    errorMessage.style.display = 'none'; // Réinitialise l'affichage
+    errorMessage.textContent = 'Remplissez tous les champs'; // Préremplir le message d'erreur
 
     // On vérifie que tous les champs soient bien remplis
     if (!formData.get('image') || !formData.get('title') || !formData.get('category')) {
-        console.log('Erreur : Champs manquants.');
-        console.log('Avant modification:', errorMessage);
-
-        // Assurez-vous que le message d'erreur est visible
-        errorMessage.style.display = 'block';
-        errorMessage.style.visibility = 'visible';
-        errorMessage.style.position = 'relative';
-        errorMessage.style.zIndex = '1000';
+        errorMessage.style.display = 'block'; // Affiche le message d'erreur
         errorMessage.style.color = 'red';
-
-        console.log('Après modification:', errorMessage);
         return;
     }
 
     try {
         const authToken = localStorage.getItem('authToken');
-        // Vérifiez que le token est bien passé dans l'en-tête Authorization
-        console.log('Authorization:', `Bearer ${authToken}`);
-
         const response = await fetch("http://localhost:5678/api/works", {
             method: 'POST',
             headers: {
@@ -282,27 +263,19 @@ export async function formSubmit(form, modal) {
             body: formData
         });
 
-        console.log('Response:', response);
-
         if (response.ok) {
             const newProjet = await response.json();
-            // On ajoute le nouveau projet à la galerie sur la page d'accueil
-            ajouterProjets([newProjet]); 
-            // On ferme la modale après l'ajout réussi
-            modal.style.display = 'none'; 
-            // On recharge la page pour afficher le nouveau projet
-            window.location.reload();
+            ajouterProjets([newProjet]); // On ajoute le nouveau projet à la galerie sur la page d'accueil
+            modal.style.display = 'none'; // On ferme la modale après l'ajout réussi
         } else {
             const error = await response.json();
             errorMessage.textContent = error.message;
             errorMessage.style.display = 'block'; // Affiche le message d'erreur de l'API
             errorMessage.style.color = 'red';
-            console.log('Erreur API:', error.message);
         }
     } catch (error) {
         errorMessage.textContent = 'Une erreur est survenue. Veuillez réessayer plus tard.';
         errorMessage.style.display = 'block'; // Affiche le message d'erreur générique
         errorMessage.style.color = 'red';
-        console.log('Erreur de catch:', error);
     }
 }

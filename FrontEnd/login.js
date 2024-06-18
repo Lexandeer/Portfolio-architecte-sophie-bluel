@@ -1,6 +1,7 @@
 document.addEventListener('DOMContentLoaded', () => {
     const loginForm = document.getElementById('login-form');
 
+    //Ecouteur sur les champs mdp et email 
     loginForm.addEventListener('submit', async (event) =>{
         event.preventDefault();
 
@@ -21,7 +22,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     //On specifie que les données sont au format json
                     'Content-type': 'application/json'
                 },
-                //On converti l'objet loginData en JSON
+                //On converti l'objet loginData en JSON pour que le mdp et l'email soient lisible par l'API
                 body: JSON.stringify(loginData)
             });
         
@@ -43,6 +44,7 @@ document.addEventListener('DOMContentLoaded', () => {
             afficherMessageErreur('Une erreur est survenue. Veuillez réessayer plus tard.'); // on affiche un message d'erreur générique si la requête à l'API échoue
         }
     });
+    
      // Fonction pour afficher un message d'erreur
      function afficherMessageErreur(message) {
         const errorMessageElement = document.getElementById('error-message');

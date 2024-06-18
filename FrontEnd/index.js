@@ -73,18 +73,19 @@ document.addEventListener('DOMContentLoaded', async () => {
             //On recupère l'ID du bouton cliqué
             const idCategorie = event.target.getAttribute('data-id');
             
-            // Filtrage des projets
-            const projetsFiltres = idCategorie == 0 ? projets : projets.filter(projet => projet.categoryId == idCategorie);
+            // Filtrage des projets : Si idCategorie est égal à 0, alors on affiche "projets" (tous les projets).
+            const projetsFiltres = idCategorie == 0 ? projets : projets.filter(projet => projet.categoryId == idCategorie); //opération ternaire pour filtrer les projets
+                                    // Sinon, on affiche les "projets" qui correspond à l'id du bouton cliqué 
 
             // Affichage des projets filtrés
-            ajouterProjets(projetsFiltres);
-            
+            ajouterProjets(projetsFiltres); 
         });
     });
 });
 
 // Boîte modale
 document.addEventListener('DOMContentLoaded', async () => {
+    //Récupèration des éléments du DOM
     const openModalBtn = document.querySelector('a[href="#modal1"]');
     const modal = document.getElementById('modal1');
     const modalWrapper = modal.querySelector('.modal-wrapper');
@@ -93,22 +94,26 @@ document.addEventListener('DOMContentLoaded', async () => {
     const addPictureBtn = modalWrapper.querySelector('.js-add-picture');
     const backModalBtn = modalWrapper.querySelector('.js-modal-back');
 
+    //On affiche la modale au click sur le lien modifier
     openModalBtn.addEventListener('click', (event) => {
         event.preventDefault();
         modal.style.display = 'flex';
         afficherEtat1(modalContent, addPictureBtn, backModalBtn);
     });
 
+    //On ferme la modale sur le click du bouton croix
     closeModalBtn.addEventListener('click', () => {
         modal.style.display = 'none';
     });
 
+    //On affiche l'Etat 1 de la modale lorsque le bouton retour est cliqué(dans modalEtat2)
     backModalBtn.addEventListener('click', () => {
         afficherEtat1(modalContent, addPictureBtn, backModalBtn);
     });
 
+    //On ferme la modale si on clique autour d'elle
     window.addEventListener('click', (event) => {
-        if (event.target === modal) {
+        if (event.target === modal) {   //<- la classe modal correspond à la partie "floutée" autour de la modale
             modal.style.display = 'none';
         }
     });
