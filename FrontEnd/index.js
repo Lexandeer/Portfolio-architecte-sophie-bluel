@@ -1,5 +1,5 @@
 //On importe les fonctions depuis utils.js
-import { fetchProjets, fetchCategories, ajouterCategories, deconnecter, afficherLienModal, ajouterProjets, afficherEtat1} from './utils.js'
+import { fetchProjets, fetchCategories, ajouterCategories, deconnecter, afficherApresConnexion, ajouterProjets, afficherEtat1} from './utils.js'
 
 
 // Ajout de l'écouteur d'événement pour le bouton de déconnexion
@@ -10,7 +10,7 @@ document.getElementById('logout').addEventListener('click', (event) => {
 
 //On s'assure que le DOM soit chargé et analysé.
 document.addEventListener('DOMContentLoaded', async () => {
-    afficherLienModal()
+    afficherApresConnexion()
     
     const portFolio = document.getElementById("portfolio");
     const gallery = document.querySelector("#portfolio .gallery");
@@ -30,6 +30,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     tous.setAttribute('data-id', 0); 
     divCategorie.appendChild(tous);
 
+    //On initialise les projets et les catégories.
     let projets = [];
     let categories = [];
 
@@ -83,6 +84,8 @@ document.addEventListener('DOMContentLoaded', async () => {
     });
 });
 
+
+
 // Boîte modale
 document.addEventListener('DOMContentLoaded', async () => {
     //Récupèration des éléments du DOM
@@ -93,6 +96,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     const closeModalBtn = modalWrapper.querySelector('.js-modal-close');
     const addPictureBtn = modalWrapper.querySelector('.js-add-picture');
     const backModalBtn = modalWrapper.querySelector('.js-modal-back');
+    
 
     //On affiche la modale au click sur le lien modifier
     openModalBtn.addEventListener('click', (event) => {

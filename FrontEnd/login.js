@@ -1,5 +1,5 @@
 document.addEventListener('DOMContentLoaded', () => {
-    const loginForm = document.getElementById('login-form');
+    const loginForm = document.getElementById('login-form');//récupération dans le DOM
 
     //Ecouteur sur les champs mdp et email 
     loginForm.addEventListener('submit', async (event) =>{

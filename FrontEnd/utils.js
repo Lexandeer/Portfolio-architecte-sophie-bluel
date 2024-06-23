@@ -12,24 +12,8 @@ export async function fetchCategories() {
     return categories;
 }
 
-// Ajoute dynamiquement les catégories pour trier les projets 
-export function ajouterCategories(categories) {
-
-    const divCategorie = document.querySelector('.categorie');
-
-    // On crée une boucle pour ajouter les catégories (filtres)
-    categories.forEach(categorie => {
-        const bouton = document.createElement('button');
-        bouton.innerText = categorie.name;
-        bouton.classList.add(`btn-${categorie.id}`);
-        // Ajout de l'ID de la catégorie comme attribut de données
-        bouton.setAttribute('data-id', categorie.id); //<- permet de savoir sur quel bouton on clique
-        divCategorie.appendChild(bouton);
-    });
-}
-
 // Ajoute dynamiquement les projets sur la page index 
-export function ajouterProjets(projets) {
+export function ajouterProjets(projets) {  // Prend en paramètre la réponse de fetchProjets
     const gallery = document.querySelector("#portfolio .gallery");
     gallery.innerHTML = ''; // Effacer le contenu existant avant d'ajouter les nouveaux projets
 
@@ -50,6 +34,22 @@ export function ajouterProjets(projets) {
     });
 }
 
+// Ajoute dynamiquement les catégories pour trier les projets 
+export function ajouterCategories(categories) { // Prend en paramètre la réponse de fetchCatégories
+
+    const divCategorie = document.querySelector('.categorie');
+
+    // On crée une boucle pour ajouter les catégories (filtres)
+    categories.forEach(categorie => {
+        const bouton = document.createElement('button');
+        bouton.innerText = categorie.name;
+        bouton.classList.add(`btn-${categorie.id}`); // On attribut une class aux boutons en fonction de leur catégories.
+        // Ajout de l'ID de la catégorie comme attribut de données
+        bouton.setAttribute('data-id', categorie.id); //<- permet de savoir sur quel bouton on clique
+        divCategorie.appendChild(bouton);
+    });
+}
+
 // Vérifie si l'utilisateur est connecté en vérifiant la présence du token dans le localStorage
 export function estConnecte() {
     return localStorage.getItem('authToken') !== null;
@@ -62,19 +62,22 @@ export function deconnecter() {
 }
 
 // Affiche ou masque les éléments de modification en fonction de l'état de connexion
-export function afficherLienModal() {
+export function afficherApresConnexion() {
     const boutonModifier = document.querySelector('.js-modal-open');
     const boutonLogin = document.getElementById('login');
     const boutonLogout = document.getElementById('logout');
+    const bandeauEdition = document.querySelector('.bandeau_edition');
 
     if (estConnecte()) {
         boutonModifier.style.display = 'block';
         boutonLogin.style.display = 'none';
         boutonLogout.style.display = 'block';
+        bandeauEdition.style.display = 'flex';
     } else {
         boutonModifier.style.display = 'none';
         boutonLogin.style.display = 'block';
         boutonLogout.style.display = 'none';
+        bandeauEdition.style.display = 'none';
     }
 }
 
@@ -130,7 +133,7 @@ export function afficherEtat1(modalContent, addPictureBtn, backModalBtn) {
     });
 }
 
-// Fonction pour afficher l'état 1 de la modale
+// Fonction pour afficher l'état 2 de la modale
 export function afficherEtat2(modalContent, backModalBtn, addPictureBtn, modal) {
     // On nettoie le contenu
     modalContent.innerHTML = '';
@@ -186,22 +189,31 @@ export function afficherEtat2(modalContent, backModalBtn, addPictureBtn, modal) 
     const imageInput = form.querySelector('#image');
     const previewImage = form.querySelector('#preview');
     const photoDiv = form.querySelector('.photo');
+    const errorMessage = form.querySelector('.error-message'); // Récupère l'élément du message d'erreur
 
     imageInput.addEventListener('change', (event) => { // Ajoute un écouteur sur le champ de fichier qui se déclenche lorsque la sélection de fichier change.
         const file = event.target.files[0]; // On selectionne le fichier en question
-        if (file) {                         // Verifie si un fichier est selectionné
-            const reader = new FileReader();
-            reader.onload = (e) => {  //définit ce qui se passe une fois le fichier lu
-                previewImage.src = e.target.result; //Affiche l'image une fois le fichier lu
-                previewImage.style.display = 'block'; // Affiche l'image de prévisualisation
-                photoDiv.style.padding = '0';
+        if (file) {                         
+            if (file.size > 4 * 1024 * 1024) { // Vérifie si le fichier dépasse 4 Mo
+                errorMessage.textContent = 'Le fichier dépasse la taille maximale de 4 Mo.';
+                errorMessage.style.display = 'block'; // Affiche le message d'erreur
+                imageInput.value = ''; // Réinitialise le champ de fichier
+                console.log(errorMessage)
+            } else {
+                const reader = new FileReader();
+                reader.onload = (e) => {  //définit ce qui se passe une fois le fichier lu
+                    previewImage.src = e.target.result; //Affiche l'image une fois le fichier lu
+                    previewImage.style.display = 'block'; // Affiche l'image de prévisualisation
+                    photoDiv.style.padding = '0';
 
-                // Cache les autres éléments
-                form.querySelector('.photo i').style.display = 'none';
-                form.querySelector('.photo label').style.display = 'none';
-                form.querySelector('.photo p').style.display = 'none';
-            };
-            reader.readAsDataURL(file);
+                    // Cache les autres éléments
+                    form.querySelector('.photo i').style.display = 'none';
+                    form.querySelector('.photo label').style.display = 'none';
+                    form.querySelector('.photo p').style.display = 'none';
+                };
+                reader.readAsDataURL(file);
+                errorMessage.style.display = 'none'; // Cache le message d'erreur si le fichier est valide
+            }
         }
     });
 
@@ -246,15 +258,21 @@ export async function formSubmit(form, modal) {
     const errorMessage = form.querySelector('.error-message');
     errorMessage.textContent = 'Remplissez tous les champs'; // Préremplir le message d'erreur
 
+    console.log("FormData before validation:", Array.from(formData.entries())); // Log to check FormData entries before validation
+
     // On vérifie que tous les champs soient bien remplis
     if (!formData.get('image') || !formData.get('title') || !formData.get('category')) {
+        console.log("Erreur : Tous les champs ne sont pas remplis.");
         errorMessage.style.display = 'block'; // Affiche le message d'erreur
         errorMessage.style.color = 'red';
+        console.log("Message d'erreur message après affichage:", errorMessage); 
         return;
     }
 
     try {
         const authToken = localStorage.getItem('authToken');
+        console.log("Authorization token:", authToken); // Log to check the authorization token
+
         const response = await fetch("http://localhost:5678/api/works", {
             method: 'POST',
             headers: {
@@ -262,6 +280,8 @@ export async function formSubmit(form, modal) {
             },
             body: formData
         });
+
+        console.log("Response status:", response.status); // Log to check response status
 
         if (response.ok) {
             const newProjet = await response.json();
@@ -272,10 +292,12 @@ export async function formSubmit(form, modal) {
             errorMessage.textContent = error.message;
             errorMessage.style.display = 'block'; // Affiche le message d'erreur de l'API
             errorMessage.style.color = 'red';
+            console.log("Erreur de l'API:", error.message); // Log to check error message from API
         }
     } catch (error) {
         errorMessage.textContent = 'Une erreur est survenue. Veuillez réessayer plus tard.';
         errorMessage.style.display = 'block'; // Affiche le message d'erreur générique
         errorMessage.style.color = 'red';
+        console.log("Erreur de catch:", error); // Log to check catch error
     }
 }

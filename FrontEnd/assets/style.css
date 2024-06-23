@@ -37,7 +37,6 @@ footer, header, hgroup, menu, nav, section {
 body {
 	line-height: 1;
 	background: #FFFEF8;
-
 }
 ol, ul {
 	list-style: none;
@@ -56,15 +55,20 @@ table {
 }
 /** end reset css**/
 body {
-	max-width: 1140px;
 	margin:auto;
 	font-family: 'Work Sans' ;
 	font-size: 14px;
 }
+
+header, main{
+	max-width: 1340px;
+	margin:auto;
+}
+
 header {
 	display: flex;
 	justify-content: space-between;
-	margin: 50px 0
+	padding-top: 50px;
 }
 section {
 	margin: 50px 0
@@ -236,6 +240,27 @@ footer nav ul {
 	background-color: white;
 }
 
+.mentions-legales{
+	margin-right: 100px;
+}
 
+.bandeau_edition {
+	background-color: black;
+	height: 60px;
+	display: none;
+	justify-content: center;
+	align-items: center;
+	
+}
+
+.mode-edition{
+	color: white;
+	font-size: 18px;
+}
+.mode-edition::before{
+	content: "\f044"; 
+    font-family: "Font Awesome 6 free";
+	margin-right: 10px;
+}
 
 
