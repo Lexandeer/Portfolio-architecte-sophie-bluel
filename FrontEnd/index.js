@@ -8,10 +8,8 @@ document.getElementById('logout').addEventListener('click', (event) => {
     deconnecter();
 });
 
-//On s'assure que le DOM soit chargé et analysé.
+// On s'assure que le DOM soit chargé et analysé
 document.addEventListener('DOMContentLoaded', async () => {
-    afficherApresConnexion()
-    
     const portFolio = document.getElementById("portfolio");
     const gallery = document.querySelector("#portfolio .gallery");
 
@@ -22,7 +20,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     // On insère la div catégorie avant la div gallery
     portFolio.insertBefore(divCategorie, gallery);
 
-    //On créer le bouton "Tous".
+    // On crée le bouton "Tous"
     const tous = document.createElement('button');
     tous.classList.add('btn-0');
     tous.innerText = "Tous";
@@ -30,7 +28,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     tous.setAttribute('data-id', 0); 
     divCategorie.appendChild(tous);
 
-    //On initialise les projets et les catégories.
+    // On initialise les projets et les catégories
     let projets = [];
     let categories = [];
 
@@ -45,7 +43,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     // Récupération et affichage des catégories
     try {
         categories = await fetchCategories();
-        ajouterCategories(categories)
+        ajouterCategories(categories);
     } catch (error) {
         console.error("Erreur lors de la récupération des catégories:", error);
     }
@@ -61,8 +59,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     // Ajout des écouteurs d'événements aux boutons de filtre
     boutons.forEach(bouton => {
         bouton.addEventListener("click", async function(event) {
-
-            //On réinitialise la couleur des boutons
+            // On réinitialise la couleur des boutons
             boutons.forEach(btn => {
                 btn.style.backgroundColor = '';
                 btn.style.color = '';
@@ -71,20 +68,20 @@ document.addEventListener('DOMContentLoaded', async () => {
             bouton.style.backgroundColor = '#1D6154';
             bouton.style.color = 'white';
 
-            //On recupère l'ID du bouton cliqué
+            // On récupère l'ID du bouton cliqué
             const idCategorie = event.target.getAttribute('data-id');
             
             // Filtrage des projets : Si idCategorie est égal à 0, alors on affiche "projets" (tous les projets).
-            const projetsFiltres = idCategorie == 0 ? projets : projets.filter(projet => projet.categoryId == idCategorie); //opération ternaire pour filtrer les projets
-                                    // Sinon, on affiche les "projets" qui correspond à l'id du bouton cliqué 
+            const projetsFiltres = idCategorie == 0 ? projets : projets.filter(projet => projet.categoryId == idCategorie); // Opération ternaire pour filtrer les projets
+            // Sinon, on affiche les "projets" qui correspondent à l'id du bouton cliqué 
 
             // Affichage des projets filtrés
             ajouterProjets(projetsFiltres); 
         });
     });
+
+    afficherApresConnexion();
 });
-
-
 
 // Boîte modale
 document.addEventListener('DOMContentLoaded', async () => {

@@ -67,17 +67,23 @@ export function afficherApresConnexion() {
     const boutonLogin = document.getElementById('login');
     const boutonLogout = document.getElementById('logout');
     const bandeauEdition = document.querySelector('.bandeau_edition');
+    const divCategorie = document.querySelector('.categorie'); 
+    const gallery = document.querySelector('.gallery'); 
 
     if (estConnecte()) {
         boutonModifier.style.display = 'block';
         boutonLogin.style.display = 'none';
         boutonLogout.style.display = 'block';
         bandeauEdition.style.display = 'flex';
+        divCategorie.style.display = 'none';       
+        gallery.style.marginTop = '100px'; 
     } else {
         boutonModifier.style.display = 'none';
         boutonLogin.style.display = 'block';
         boutonLogout.style.display = 'none';
         bandeauEdition.style.display = 'none';
+        divCategorie.style.display = 'flex'; 
+        gallery.style.marginTop = '0'; 
     }
 }
 
@@ -198,7 +204,6 @@ export function afficherEtat2(modalContent, backModalBtn, addPictureBtn, modal) 
                 errorMessage.textContent = 'Le fichier dépasse la taille maximale de 4 Mo.';
                 errorMessage.style.display = 'block'; // Affiche le message d'erreur
                 imageInput.value = ''; // Réinitialise le champ de fichier
-                console.log(errorMessage)
             } else {
                 const reader = new FileReader();
                 reader.onload = (e) => {  //définit ce qui se passe une fois le fichier lu
@@ -217,6 +222,24 @@ export function afficherEtat2(modalContent, backModalBtn, addPictureBtn, modal) 
         }
     });
 
+    // Fonction pour vérifier si tous les champs sont remplis
+    function verifierChamps() {
+        const image = form.querySelector('#image').files.length > 0;
+        const title = form.querySelector('#title').value.trim() !== '';
+        const category = form.querySelector('#category').value.trim() !== '';
+
+        if (image && title && category) {
+            addPictureBtn.style.backgroundColor = '#1D6154'; // Vert
+        } else {
+            addPictureBtn.style.backgroundColor = '#d3d3d3'; // Gris
+        }
+    }
+
+    // Ajout d'écouteurs d'événement pour vérifier les champs à chaque modification
+    form.querySelector('#image').addEventListener('change', verifierChamps);
+    form.querySelector('#title').addEventListener('input', verifierChamps);
+    form.querySelector('#category').addEventListener('change', verifierChamps);
+
     // Mettre à jour le texte du bouton
     addPictureBtn.textContent = 'Valider';
 
@@ -226,6 +249,9 @@ export function afficherEtat2(modalContent, backModalBtn, addPictureBtn, modal) 
         event.preventDefault();
         formSubmit(form, modal);
     });
+
+    // Vérifier les champs au chargement initial
+    verifierChamps();
 }
 
 // Gestion de la suppression des projets dans la modale(Etat1)
@@ -284,9 +310,8 @@ export async function formSubmit(form, modal) {
         console.log("Response status:", response.status); // Log to check response status
 
         if (response.ok) {
-            const newProjet = await response.json();
-            ajouterProjets([newProjet]); // On ajoute le nouveau projet à la galerie sur la page d'accueil
-            modal.style.display = 'none'; // On ferme la modale après l'ajout réussi
+            const projets = await fetchProjets();
+            ajouterProjets(projets); // Afficher tous les projets, y compris le nouveau
         } else {
             const error = await response.json();
             errorMessage.textContent = error.message;
